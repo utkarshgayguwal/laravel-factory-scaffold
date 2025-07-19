@@ -47,11 +47,11 @@ class ScaffoldFactoryCommand extends Command
     protected function generateFactoryContent($model, $columns)
     {
         $factoryStub = "<?php\n\nnamespace Database\Factories;\n\n";
-        // $factoryStub .= "use {$model};\n";
+        $factoryStub .= "use {$model};\n";
         $factoryStub .= "use Illuminate\Database\Eloquent\Factories\Factory;\n";
         $factoryStub .= "use Carbon\\Carbon;\n\n";
         $factoryStub .= "class ".class_basename($model)."Factory extends Factory\n{\n";
-        $factoryStub .= "    protected \$model = {$model}::class;\n\n";
+        $factoryStub .= "    protected \$model = " . class_basename($model) . "::class;\n\n";
         $factoryStub .= "    public function definition()\n    {\n        return [\n";
 
         foreach ($columns as $column) {
@@ -69,7 +69,7 @@ class ScaffoldFactoryCommand extends Command
     protected function getFakeDataForColumn($column)
     {
         $name = $column['name'];
-        $type = $column['type'];
+        $type = $column['type_name'];
 
         // Handle special column names first
         if ($name === 'password') {
@@ -80,7 +80,7 @@ class ScaffoldFactoryCommand extends Command
             return 'rand(1, 5)';
         }
 
-        if (Str::contains($name, 'email')) {
+        if (Str::contains($name, 'email') && $type === 'varchar') {
             return '$this->faker->unique()->safeEmail()';
         }
 
@@ -98,7 +98,7 @@ class ScaffoldFactoryCommand extends Command
 
         // Handle data types
         switch ($type) {
-            case 'string':
+            case 'varchar':
                 return '$this->faker->word()';
             case 'text':
                 return '$this->faker->paragraph()';
@@ -130,7 +130,7 @@ class ScaffoldFactoryCommand extends Command
         $stub .= "use {$model};\n\n";
         $stub .= "class {$seederName} extends Seeder\n{\n";
         $stub .= "    public function run()\n    {\n";
-        $stub .= "        {$model}::factory()->count({$count})->create();\n";
+        $stub .= "        " . class_basename($model) . "::factory()->count({$count})->create();\n";
         $stub .= "    }\n}\n";
         
         return $stub;
