@@ -47,12 +47,13 @@ class ScaffoldFactoryCommand extends Command
     protected function generateFactoryContent($model, $columns)
     {
         $factoryStub = "<?php\n\nnamespace Database\Factories;\n\n";
-        $factoryStub .= "use {$model};\n";
-        $factoryStub .= "use Illuminate\Database\Eloquent\Factories\Factory;\n\n";
+        // $factoryStub .= "use {$model};\n";
+        $factoryStub .= "use Illuminate\Database\Eloquent\Factories\Factory;\n";
+        $factoryStub .= "use Carbon\\Carbon;\n\n";
         $factoryStub .= "class ".class_basename($model)."Factory extends Factory\n{\n";
         $factoryStub .= "    protected \$model = {$model}::class;\n\n";
         $factoryStub .= "    public function definition()\n    {\n        return [\n";
-        
+
         foreach ($columns as $column) {
             if ($column['name'] === 'id') continue;
             
@@ -60,9 +61,8 @@ class ScaffoldFactoryCommand extends Command
             $factoryStub .= $this->getFakeDataForColumn($column);
             $factoryStub .= ",\n";
         }
-        
+
         $factoryStub .= "        ];\n    }\n}\n";
-        
         return $factoryStub;
     }
     
@@ -70,21 +70,36 @@ class ScaffoldFactoryCommand extends Command
     {
         $name = $column['name'];
         $type = $column['type'];
-        
-        // Handle foreign keys (assuming naming convention like 'user_id')
+
+        // Handle special column names first
+        if ($name === 'password') {
+            return 'bcrypt("password")';
+        }
+
         if (Str::endsWith($name, '_id')) {
             return 'rand(1, 5)';
         }
-        
-        // Map column types to faker methods
+
+        if (Str::contains($name, 'email')) {
+            return '$this->faker->unique()->safeEmail()';
+        }
+
+        if (Str::contains($name, 'name')) {
+            return '$this->faker->name()';
+        }
+
+        if (Str::contains($name, ['phone', 'mobile'])) {
+            return '$this->faker->phoneNumber()';
+        }
+
+        if (Str::contains($name, 'address')) {
+            return '$this->faker->address()';
+        }
+
+        // Handle data types
         switch ($type) {
             case 'string':
-                if (Str::contains($name, 'email')) {
-                    return '$this->faker->unique()->safeEmail()';
-                } elseif (Str::contains($name, 'name')) {
-                    return '$this->faker->name()';
-                }
-                return 'Str::random(10)';
+                return '$this->faker->word()';
             case 'text':
                 return '$this->faker->paragraph()';
             case 'integer':
@@ -93,11 +108,13 @@ class ScaffoldFactoryCommand extends Command
             case 'boolean':
                 return '$this->faker->boolean()';
             case 'date':
+                return 'Carbon::now()->format("Y-m-d")';
             case 'datetime':
-                return '$this->faker->dateTime()';
+            case 'timestamp':
+                return 'Carbon::now()';
             case 'float':
             case 'decimal':
-                return '$this->faker->randomFloat(2)';
+                return '$this->faker->randomFloat(2, 0, 1000)';
             default:
                 return 'null';
         }
