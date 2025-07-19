@@ -127,9 +127,13 @@ class ScaffoldFactoryCommand extends Command
         
         $stub = "<?php\n\nnamespace Database\Seeders;\n\n";
         $stub .= "use Illuminate\Database\Seeder;\n";
+        $stub .= "use Illuminate\Support\Facades\DB;\n";
         $stub .= "use {$model};\n\n";
         $stub .= "class {$seederName} extends Seeder\n{\n";
         $stub .= "    public function run()\n    {\n";
+        $stub .= "        DB::statement('SET FOREIGN_KEY_CHECKS=0');\n";
+        $stub .= "        " . class_basename($model) . "::truncate();\n";
+        $stub .= "        DB::statement('SET FOREIGN_KEY_CHECKS=1');\n";
         $stub .= "        " . class_basename($model) . "::factory()->count({$count})->create();\n";
         $stub .= "    }\n}\n";
         
