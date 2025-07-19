@@ -46,7 +46,18 @@ class ScaffoldFactoryCommand extends Command
     
     protected function generateFactoryContent($model, $columns)
     {
-        $factoryStub = "<?php\n\nnamespace Database\Factories;\n\n";
+        $modelBaseName = class_basename($model);
+    
+        $namespaceParts = explode('\\', $model);
+        $subnamespace = '';
+        
+        $modelsKey = array_search('Models', $namespaceParts);
+        if ($modelsKey !== false && count($namespaceParts) > $modelsKey + 2) {
+            $subfolders = array_slice($namespaceParts, $modelsKey + 1, -1);
+            $subnamespace = '\\' . implode('\\', $subfolders);
+        }
+
+        $factoryStub = "<?php\n\nnamespace Database\Factories{$subnamespace};\n\n";
         $factoryStub .= "use {$model};\n";
         $factoryStub .= "use Illuminate\Database\Eloquent\Factories\Factory;\n";
         $factoryStub .= "use Carbon\\Carbon;\n\n";
@@ -143,7 +154,25 @@ class ScaffoldFactoryCommand extends Command
     protected function writeFactoryFile($model, $content)
     {
         $modelBaseName = class_basename($model);
-        $path = database_path("factories/{$modelBaseName}Factory.php");
+    
+        // Extract subfolder path from namespace (e.g., "Leave" from "App\Models\Leave\User")
+        $namespaceParts = explode('\\', $model);
+        $subfolderPath = '';
+        
+        // Find the part after "Models" in the namespace
+        $modelsKey = array_search('Models', $namespaceParts);
+        if ($modelsKey !== false && count($namespaceParts) > $modelsKey + 2) {
+            $subfolders = array_slice($namespaceParts, $modelsKey + 1, -1);
+            $subfolderPath = implode('/', $subfolders);
+        }
+        
+        // Create the full directory path
+        $factoryDir = database_path("factories/{$subfolderPath}");
+        if (!file_exists($factoryDir)) {
+            mkdir($factoryDir, 0755, true);
+        }
+
+        $path = "{$factoryDir}/{$modelBaseName}Factory.php";
         
         file_put_contents($path, $content);
     }
