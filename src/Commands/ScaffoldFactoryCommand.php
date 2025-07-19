@@ -15,7 +15,14 @@ class ScaffoldFactoryCommand extends Command
     {
         $model = $this->argument('model');
         $count = $this->option('count');
-        
+        $model = str_replace('/', '\\', $model);
+    
+        // Verify the model exists
+        if (!class_exists($model)) {
+            $this->error("Model {$model} does not exist!");
+            return;
+        }
+
         // Extract table name from model
         $modelInstance = app($model);
         $tableName = $modelInstance->getTable();
@@ -25,6 +32,7 @@ class ScaffoldFactoryCommand extends Command
         
         // Generate factory content
         $factoryContent = $this->generateFactoryContent($model, $columns);
+
         
         // Generate seeder content
         $seederContent = $this->generateSeederContent($model, $count);
