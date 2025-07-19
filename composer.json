@@ -3,7 +3,7 @@
     "description": "Automatically generate factories and seeders for Laravel models",
     "require": {
         "php": "^8.0",
-        "laravel/framework": "^9.0|^10.0|^11.0|^12.0"
+        "laravel/framework": "^8.0|^9.0|^10.0|^11.0|^12.0"
     },
     "autoload": {
         "psr-4": {
