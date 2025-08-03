@@ -1,6 +1,6 @@
 <?php
 
-namespace utkarshgayguwal\FactoryScaffold\Commands;
+namespace UtkarshGayguwal\FactoryScaffold\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;

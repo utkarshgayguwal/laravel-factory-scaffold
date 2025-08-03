@@ -1,9 +1,9 @@
 <?php
 
-namespace utkarshgayguwal\FactoryScaffold\Providers;
+namespace UtkarshGayguwal\FactoryScaffold\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use utkarshgayguwal\FactoryScaffold\Commands\ScaffoldFactoryCommand;
+use UtkarshGayguwal\FactoryScaffold\Commands\ScaffoldFactoryCommand;
 
 class FactoryScaffoldServiceProvider extends ServiceProvider
 {
