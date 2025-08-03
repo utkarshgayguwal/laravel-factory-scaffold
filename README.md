@@ -17,7 +17,7 @@ composer require utkarshgayguwal/laravel-factory-scaffold
 ## Usage
 ### Basic Command
 ```bash
-php artisan make:scaffold App\Models\User
+php artisan make:scaffold App/Models/User
 ```
 #### Generates:
 - database/factories/UserFactory.php
@@ -25,13 +25,13 @@ php artisan make:scaffold App\Models\User
 
 ### Custom Record Count
 ```bash
-php artisan make:scaffold App\Models\User --count=5
+php artisan make:scaffold App/Models/User --count=5
 ```
 
 ### Nested Models
 For models in subfolders (eg. App\Models\LeaveManagement\Leave):
 ```bash
-php artisan make:scaffold App\Models\LeaveManagement\Leave
+php artisan make:scaffold App/Models/LeaveManagement/Leave
 ```
 #### Generates:
 - database/factories/LeaveManagement/LeaveFactory.php
